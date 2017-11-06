@@ -1,0 +1,52 @@
+/* ======== Section 1: Options ========== */
+options {
+  IGNORE_CASE = true;
+}
+
+/* ======== Section 2: User Code ======== */
+
+PARSER_BEGIN(CCALTokeniser)
+
+public class CCALTokeniser{
+	public static void main(String args[]) {
+		CCALTokeniser tokeniser;
+		if(args.length == 0) {
+			System.out.println("Reading from the standard input:");
+			tokeniser = new CCALTokeniser(System.in);
+		}
+		else if(args.length == 1) {
+	    	try {
+				tokeniser = new CCALTokeniser(new java.io.FileInputStream(args[0]));
+	        } catch (java.io.FileNotFoundException e) {
+	            System.err.println("File " + args[0]  + " not found.");
+	            return;
+	        }
+		}
+	    else{
+	        System.out.println("SLP Tokeniser:  Usage is one of:");
+            System.out.println("         java SLPTokeniser < inputfile");
+            System.out.println("OR");
+            System.out.println("         java SLPTokeniser inputfile");
+			return;
+	    }
+
+	    /* Read tokens and print until EOF */
+		for(Token t = getNextToken(); t.kind != EOF; t = getNextToken()) {
+			// Print out the actual text for the constants, identifiers etc
+			if(t.kind == Num) {
+				System.out.print("Number");
+				System.out.print("("+t.image+") ");
+			}
+			else if(t.kind == ID)
+			{
+				System.out.print("Identifier");
+				System.out.print("("+t.image+") ");
+			}
+			else {
+				System.out.print(t.image+" ");
+			}
+		}
+	}
+}
+
+PARSER_END(CCALTokeniser)
