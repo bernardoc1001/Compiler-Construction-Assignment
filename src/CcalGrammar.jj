@@ -1,5 +1,6 @@
 /* ======== Section 1: Options ========== */
 options {
+  JAVA_UNICODE_ESCAPE = true;
   IGNORE_CASE = true;
 }
 
@@ -24,9 +25,9 @@ public class CCALTokeniser{
 		}
 	    else{
 	        System.out.println("SLP Tokeniser:  Usage is one of:");
-            System.out.println("         java SLPTokeniser < inputfile");
+            System.out.println("         java CCALTokeniser < inputfile");
             System.out.println("OR");
-            System.out.println("         java SLPTokeniser inputfile");
+            System.out.println("         java CCALTokeniser inputfile");
 			return;
 	    }
 
@@ -50,3 +51,85 @@ public class CCALTokeniser{
 }
 
 PARSER_END(CCALTokeniser)
+
+/* ======== Section 3: Token Definitions === */
+TOKEN_MGR_DECLS :
+{
+	static int commentNesting = 0;
+}
+
+SKIP : /* COMMENTS */ /*TODO ADD IN OTHER KIND OF COMMENTS*/
+{
+	"/*" { commentNesting++; }
+  | "*/" { commentNesting--;
+  		   if(commentNesting == 0)
+  		   		SwitchTo(DEFAULT);
+  		 }
+  | <~[]> 
+}
+
+ /* Keywords */
+TOKEN :
+{
+	< VAR : "var" >
+| 	< CONST : "const" >
+| 	< RET : "return" >
+| 	< INT : "integer" >
+| 	< BOOL : "boolean" >
+| 	< VOID : "void" >
+| 	< MAIN : "main" >
+|  	< IF : "if" >
+|  	< ELSE : "else" >
+| 	< TRUE : "true" >
+| 	< FALSE : "false" >
+| 	< WHILE : "while" >
+|  	< BEGIN : "begin" >
+| 	< END : "end" >
+|  	< IS : "is" >
+| 	< SKI : "skip" >
+}
+
+ /* punctuation and binary operators */
+/*Have square brackets to prevent following warning: Warning:  "," cannot be matched as a string literal token at line 96, column 9. It will be matched as  <token of kind 3>.*/
+TOKEN :
+{
+	< COMMA : [","] >
+| 	< SCOLON : [";"] > 
+| 	< COLON : [":"] >
+| 	< ASSIGN : ["="] >
+| 	< LBR : ["("] >
+|  	< RBR : [")"] >
+| 	< PLUS_SIGN : ["+"] >
+| 	< MINUS_SIGN : ["-"] >
+| 	< NEGATE : ["~"] >
+|  	< OR : "||" >
+|  	< AND : "&&" >
+| 	< EQUALS : "==" >
+| 	< NOT_EQUALs : "!=" >
+| 	< LT : ["<"] >
+|  	< LTE : "<=" >
+| 	< GT : [">"] >
+| 	< GTE : ">=" >  
+}
+
+/* Numbers and identifiers */
+TOKEN :
+{
+  < NUM : (<ZERO_DIGIT>|((<NON_ZERO_DIGIT>)+ (<ZERO_DIGIT> | <NON_ZERO_DIGIT>)*)) >
+| < #NON_ZERO_DIGIT : ["1" - "9"] >
+| < ZERO_DIGIT : ["0"] >
+| < ID : (<LETTER>)+(<NUM>|"_"|<LETTER>)* >
+| < #LETTER : ["a" - "z", "A" -"Z"]>
+}
+
+/* Anything not recognised so far*/
+TOKEN :
+{
+  < OTHER : ~[] >
+}
+
+
+
+
+
+
