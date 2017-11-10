@@ -94,7 +94,7 @@ TOKEN :
 TOKEN :
 {
 	< COMMA : [","] >
-| 	< SCOLON : [";"] > 
+| 	< SEMI_COLON : [";"] > 
 | 	< COLON : [":"] >
 | 	< ASSIGN : ["="] >
 | 	< LBR : ["("] >
@@ -129,7 +129,146 @@ TOKEN :
 }
 
 
+/* ======== Section 4: The Grammar ========== */
+
+void program() : { }
+{
+  decl_list()
+  function_list()
+  main()
+}
+
+/* TODO possibly fix this. is "?" represent "| epsilon". Do i make the list "?" */
+void decl_list()	: { }
+{
+  (decl() < SEMI_COLON > decl_list())?
+}
 
 
+void decl()	: { }
+{
+  var_decl()
+| const_decl()
+}
+
+void var_decl()	: { }
+{
+  <VAR> <ID><COLON>type()
+}
+
+void const_decl()	: { }
+{
+  <CONST> <ID><COLON>type() <ASSIGN> expression()
+}
+
+/* TODO possibly fix this. is "?" represent "| epsilon". Do i make the list "?" */
+void function_list()	: { }
+{
+  (function() function_list())?
+}
+
+/*TODO check epsilon*/
+void function()	: { }
+{
+  type() <ID> <LBR>parameter_list()<RBR> <IS>
+  decl_list()
+  <BEGIN>
+  statement_block()
+  <RET> <LBR> (expression())? <RBR><SEMI_COLON>
+}
+
+void type() : { }
+{
+  <INT>|<BOOL>|<VOID>
+}
+
+/*TODO check epsilon*/
+void parameter_list()	: { }
+{
+  (nemp_parameter_list())?
+}
+
+void nemp_parameter_list()	: { }
+{
+  <ID><COLON>type() | <ID><COLON>type() <COMMA> nemp_parameter_list()
+}
+
+void main()	: { }
+{
+  <MAIN>
+  <BEGIN>
+  decl_list()
+  statement_block()
+  <END>
+}
+
+/*TODO check epsilon*/
+void statement_block()	: { }
+{
+  (statement() statement_block())?
+}
+
+void statement()	: { }
+{
+  <ID> <ASSIGN> expression()<SEMI_COLON>
+| <ID> <LBR> arg_list() <RBR> <SEMI_COLON>
+| <BEGIN> statement_block() <END>
+	<ELSE> <BEGIN> statement_block() <END>
+| <WHILE> condition() <BEGIN> statement_block() <END>
+| <SKI><SEMI_COLON>
+}
+
+void expression()	: { }
+{
+  fragment() binary_arith_op() fragment()
+| <LBR> expression() <RBR>
+| <ID> <LBR> arg_list() <RBR>
+| fragment()
+}
 
 
+void binary_arith_op()	: { }
+{
+  <PLUS_SIGN>
+| <MINUS_SIGN>
+}
+
+void fragment()	: { }
+{
+  <ID>
+| <MINUS_SIGN><ID>
+| <NUM>
+| <TRUE>
+| <FALSE>
+| expression()
+}
+
+void condition(): { }
+{
+  <NEGATE>condition()
+| <LBR> condition()<RBR>
+| expression() comp_op() expression()
+| condition() ((<OR>) | (<AND>)) condition()
+}
+
+void comp_op(): { }
+{
+  <EQUALS>
+  | <NOT_EQUALs>
+  |	<LT>
+  |	<LTE>
+  |	<GT>
+  | <GTE>
+}
+
+/*TODO check epsilon*/
+void arg_list(): { }
+{
+  (nemp_arg_list())?
+}
+
+void nemp_arg_list(): { }
+{
+  <ID>
+| <ID> <COMMA> nemp_arg_list()
+}
