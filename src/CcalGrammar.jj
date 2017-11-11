@@ -167,14 +167,13 @@ void function_list()	: { }
   (function() function_list())?
 }
 
-/*TODO check epsilon*/
 void function()	: { }
 {
   type() <ID> <LBR>parameter_list()<RBR> <IS>
   decl_list()
   <BEGIN>
   statement_block()
-  <RET> <LBR> (expression())? <RBR><SEMI_COLON>
+  <RET> <LBR> (expression() | { }) <RBR><SEMI_COLON>
 }
 
 void type() : { }
@@ -182,15 +181,28 @@ void type() : { }
   <INT>|<BOOL>|<VOID>
 }
 
-/*TODO check epsilon*/
 void parameter_list()	: { }
 {
-  (nemp_parameter_list())?
+  nemp_parameter_list()
+| { }
 }
+
+//Need to perform Left Factorisation
+//Original:
+//void nemp_parameter_list()	: { }
+//{
+//  <ID><COLON>type() | <ID><COLON>type() <COMMA> nemp_parameter_list()
+//}
 
 void nemp_parameter_list()	: { }
 {
-  <ID><COLON>type() | <ID><COLON>type() <COMMA> nemp_parameter_list()
+  <ID><COLON>type() nemp_parameter_list_prime()
+}
+
+void nemp_parameter_list_prime()	: { }
+{
+  <COMMA> nemp_parameter_list()
+| { }
 }
 
 void main()	: { }
@@ -202,21 +214,30 @@ void main()	: { }
   <END>
 }
 
-/*TODO check epsilon*/
 void statement_block()	: { }
 {
-  (statement() statement_block())?
+  statement() statement_block()
+| { }
 }
 
+/* Again perform Left Factorisation*/
 void statement()	: { }
 {
-  <ID> <ASSIGN> expression()<SEMI_COLON>
-| <ID> <LBR> arg_list() <RBR> <SEMI_COLON>
+  <ID> statement_prime()
 | <BEGIN> statement_block() <END>
 	<ELSE> <BEGIN> statement_block() <END>
 | <WHILE> condition() <BEGIN> statement_block() <END>
 | <SKI><SEMI_COLON>
 }
+
+void statement_prime()	: { }
+{
+  <ASSIGN> expression()<SEMI_COLON>
+| <LBR> arg_list() <RBR> <SEMI_COLON>
+
+}
+
+
 // ORIGIONAL EXPRESSION: NEED TO REMOVE LEFT RECURSION
 //void expression()	: { }
 //{
@@ -271,17 +292,21 @@ void fragment_delta()	: { }
 | <FALSE>
 }
 
-/*TODO check Epsilon*/
 void fragment_prime(): { }
 {
-  (expression_alpha()fragment_prime())?
+  expression_alpha()fragment_prime()
+| { }
 }
 
+
+/* Not sure I've done id lookahead correctly here*/
 void fragment(): { }
 {
   expression_beta()fragment_prime()
 | fragment_delta()fragment_prime()
 }
+
+
 //=========End================================
 
 
@@ -319,10 +344,10 @@ void condition_beta(): { }
 | expression() comp_op() expression()
 }
 
-/*TODO check epsilon*/
 void condition_prime(): { }
 {
-  (condition_alpha()condition_prime())?
+  condition_alpha()condition_prime()
+| { }
 }
 
 void comp_op(): { }
@@ -335,14 +360,20 @@ void comp_op(): { }
   | <GTE>
 }
 
-/*TODO check epsilon*/
 void arg_list(): { }
 {
-  (nemp_arg_list())?
+  nemp_arg_list()
+| { }
 }
 
+/*Perform Left Factoristation*/
 void nemp_arg_list(): { }
 {
-  <ID>
-| <ID> <COMMA> nemp_arg_list()
+  <ID> nemp_arg_list_prime()
+}
+
+void nemp_arg_list_prime(): { }
+{
+  <COMMA> nemp_arg_list()
+| { }
 }
