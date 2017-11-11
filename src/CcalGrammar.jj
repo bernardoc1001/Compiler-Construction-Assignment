@@ -217,15 +217,31 @@ void statement()	: { }
 | <WHILE> condition() <BEGIN> statement_block() <END>
 | <SKI><SEMI_COLON>
 }
+// ORIGIONAL EXPRESSION: NEED TO REMOVE LEFT RECURSION
+//void expression()	: { }
+//{
+//  fragment() binary_arith_op() fragment()
+//| <LBR> expression() <RBR>
+//| <ID> <LBR> arg_list() <RBR>
+//| fragment()
+//}
+//
+//void fragment()	: { }
+//{
+//  <ID>
+//| <MINUS_SIGN><ID>
+//| <NUM>
+//| <TRUE>
+//| <FALSE>
+//| expression()
+//}
 
+
+//expression is now a wrapper for fragment
 void expression()	: { }
 {
-  fragment() binary_arith_op() fragment()
-| <LBR> expression() <RBR>
-| <ID> <LBR> arg_list() <RBR>
-| fragment()
+	fragment()
 }
-
 
 void binary_arith_op()	: { }
 {
@@ -233,22 +249,80 @@ void binary_arith_op()	: { }
 | <MINUS_SIGN>
 }
 
-void fragment()	: { }
+
+//=========Start==============================
+void expression_alpha()	: { }
+{
+  binary_arith_op() fragment()
+}
+
+void expression_beta(): { }
+{
+  <LBR> expression() <RBR>
+| <ID> <LBR> arg_list() <RBR>
+}
+
+void fragment_delta()	: { }
 {
   <ID>
 | <MINUS_SIGN><ID>
 | <NUM>
 | <TRUE>
 | <FALSE>
-| expression()
 }
 
+/*TODO check Epsilon*/
+void fragment_prime(): { }
+{
+  (expression_alpha()fragment_prime())?
+}
+
+void fragment(): { }
+{
+  expression_beta()fragment_prime()
+| fragment_delta()fragment_prime()
+}
+//=========End================================
+
+
+// ORIGIONAL CONDITION STATEMENT: NEED TO REMOVE LEFT RECURSION
+//void condition(): { }
+//{
+//  <NEGATE>condition()
+//| <LBR> condition()<RBR>
+//| expression() comp_op() expression()
+//| condition() ((<OR>) | (<AND>)) condition()
+//}
+
+
+// I am using the following formula to remove left recursion
+// Given:
+// A --> A alpha | B
+// Convert it to
+// A -- > BA'
+// A' -- > alpha A' | epsilon
+
 void condition(): { }
+{
+  condition_beta()condition_prime()
+}
+
+void condition_alpha(): { }
+{
+  ((<OR>) | (<AND>)) condition()
+}
+
+void condition_beta(): { }
 {
   <NEGATE>condition()
 | <LBR> condition()<RBR>
 | expression() comp_op() expression()
-| condition() ((<OR>) | (<AND>)) condition()
+}
+
+/*TODO check epsilon*/
+void condition_prime(): { }
+{
+  (condition_alpha()condition_prime())?
 }
 
 void comp_op(): { }
