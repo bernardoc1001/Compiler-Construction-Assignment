@@ -189,8 +189,13 @@ void function()	: { }
   decl_list()
   <BEGIN>
   statement_block()
-  <RET> <LBR> (expression() | { }) <RBR><SEMI_COLON>
+  <RET> function_nested_brackets()<SEMI_COLON>
   <END>
+}
+
+void function_nested_brackets():{}
+{
+    (<LBR> | { }) (expression() | { }) (<RBR> | { })
 }
 
 void type() : { }
@@ -352,8 +357,8 @@ void fragment(): { }
  } 
  
  void fragment() : {} {
-    <MINUS_SIGN> (<ID>|<INT>)
-    | <INT>
+    <MINUS_SIGN> (<ID>|<NUM>)
+    | <NUM>
     | <TRUE>
     | <FALSE>
  }
