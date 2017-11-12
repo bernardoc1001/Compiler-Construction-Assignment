@@ -247,6 +247,7 @@ void statement()	: { }
 {
   <ID> statement_prime()
 | <BEGIN> statement_block() <END>
+| <IF> condition() <BEGIN> statement_block() <END>
 	<ELSE> <BEGIN> statement_block() <END>
 | <WHILE> condition() <BEGIN> statement_block() <END>
 | <SKI><SEMI_COLON>
