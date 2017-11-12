@@ -10,7 +10,7 @@ begin
   end
   else
   begin
-    if y < 0 && x >= 0
+    if y < 0 && x >= 0 || x < -5
     begin
       minus_sign = true;
       y = -y ;

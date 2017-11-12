@@ -300,28 +300,9 @@ void fragment(): { }
   (<ID>|fragment_delta()) (expression_beta()|{ }) fragment_prime() //tidied up
 }
 
-// ORIGIONAL CONDITION STATEMENT: NEED TO REMOVE LEFT RECURSION
-//void condition(): { }
-//{
-//  <NEGATE>condition()
-//| <LBR> condition()<RBR>
-//| expression() comp_op() expression()
-//| condition() ((<OR>) | (<AND>)) condition()
-//}
-
-
-// I am using the following formula to remove left recursion
-// Given:
-// A --> A alpha | B
-// Convert it to
-// A -- > BA'
-// A' -- > alpha A' | epsilon
-
-
-/*
 void condition(): { }
 {
-  condition_beta()condition_prime()
+  (<LBR> |{ })condition_beta()condition_prime()(<RBR> | { })
 }
 
 void condition_alpha(): { }
@@ -329,10 +310,9 @@ void condition_alpha(): { }
   ((<OR>) | (<AND>)) condition()
 }
 
-void condition_beta(): { }
+void condition_beta(): { } //Added possible brackets above
 {
   <NEGATE>condition()
-| <LBR> condition()<RBR>
 | expression() comp_op() expression()
 }
 
@@ -341,17 +321,6 @@ void condition_prime(): { }
   condition_alpha()condition_prime()
 | { }
 }
-*/
-
-//++++++++++++++ fresh start ++++++++++++++++
- void condition_helper() : {} {
-    expression() comp_op() expression()
- }
-
- void condition() : {} {
-    (<NEGATE>|{}) (<LBR>|{})condition_helper()(<RBR>|{})(((<OR> | <AND>) condition_helper())|{})
- }
-//++++++++++++++ Fresh End ++++++++++++++++++
 
 void comp_op(): { }
 {
