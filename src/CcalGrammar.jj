@@ -190,6 +190,7 @@ void function()	: { }
   <BEGIN>
   statement_block()
   <RET> <LBR> (expression() | { }) <RBR><SEMI_COLON>
+  <END>
 }
 
 void type() : { }
