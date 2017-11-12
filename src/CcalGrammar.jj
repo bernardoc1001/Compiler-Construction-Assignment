@@ -6,51 +6,43 @@ options {
 
 /* ======== Section 2: User Code ======== */
 
-PARSER_BEGIN(CCALTokeniser)
 
-public class CCALTokeniser{
-	public static void main(String args[]) {
-		CCALTokeniser tokeniser;
-		if(args.length == 0) {
-			System.out.println("Reading from the standard input:");
-			tokeniser = new CCALTokeniser(System.in);
-		}
-		else if(args.length == 1) {
-	    	try {
-				tokeniser = new CCALTokeniser(new java.io.FileInputStream(args[0]));
-	        } catch (java.io.FileNotFoundException e) {
-	            System.err.println("File " + args[0]  + " not found.");
-	            return;
-	        }
-		}
-	    else{
-	        System.out.println("SLP Tokeniser:  Usage is one of:");
-            System.out.println("         java CCALTokeniser < inputfile");
+
+PARSER_BEGIN(CCALParser)
+
+public class CCALParser {
+    public static void main(String args[]) {
+        CCALParser parser;
+        if (args.length == 0) {
+            System.out.println("CCAL Parser:  Reading from standard input . . .");
+            parser = new CCALParser(System.in);
+        } else if (args.length == 1) {
+            System.out.println("CCAL Parser:  Reading from file " + args[0] + " . . .");
+            try {
+                parser = new CCALParser(new java.io.FileInputStream(args[0]));
+            } catch (java.io.FileNotFoundException e) {
+                System.out.println("CCAL Parser:  File " + args[0] + " not found.");
+                return;
+            }
+        } else {
+            System.out.println("CCAL Parser:  Usage is one of:");
+            System.out.println("         java CCALParser < inputfile");
             System.out.println("OR");
-            System.out.println("         java CCALTokeniser inputfile");
-			return;
-	    }
+            System.out.println("         java CCALParser inputfile");
+            return;
+        }
 
-	    /* Read tokens and print until EOF */
-		for(Token t = getNextToken(); t.kind != EOF; t = getNextToken()) {
-			// Print out the actual text for the constants, identifiers etc
-			if(t.kind == Num) {
-				System.out.print("Number");
-				System.out.print("("+t.image+") ");
-			}
-			else if(t.kind == ID)
-			{
-				System.out.print("Identifier");
-				System.out.print("("+t.image+") ");
-			}
-			else {
-				System.out.print(t.image+" ");
-			}
-		}
-	}
+        try {
+            parser.program();
+            System.out.println("CCAL Parser: CCAL program parsed successfully.");
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            System.out.println("CCAL Parser:  Encountered errors during parse.");
+        }
+    }
 }
 
-PARSER_END(CCALTokeniser)
+PARSER_END(CCALParser)
 
 /* ======== Section 3: Token Definitions === */
 TOKEN_MGR_DECLS :
@@ -129,7 +121,8 @@ TOKEN :
 }
 
 
-/* ======== Section 4: The Grammar ========== */
+/* ======== Section 4: The Grammar & Production Rules ========== */
+
 
 void program() : { }
 {
@@ -258,6 +251,10 @@ void statement_prime()	: { }
 //}
 
 
+
+
+
+/*
 //expression is now a wrapper for fragment
 void expression()	: { }
 {
@@ -299,7 +296,7 @@ void fragment_prime(): { }
 }
 
 
-/* Not sure I've done id lookahead correctly here*/
+// Not sure I've done id lookahead correctly here
 void fragment(): { }
 {
   expression_beta()fragment_prime()
@@ -308,6 +305,43 @@ void fragment(): { }
 
 
 //=========End================================
+
+*/
+
+
+
+
+
+// +++++++++++++++ Fresh Start +++++++++++++++++++++++++
+
+ void expression() : {} {
+    (<LBR>|{})expression_helper()(<RBR>|{})
+ }
+
+ void expression_helper() : {} {
+    (<ID>|(fragment()))((binary_arith_op()(<ID>|(fragment()))|(<LBR>arg_list()<RBR>))|{})
+ }
+
+ void binary_arith_op() : {} {
+    <PLUS_SIGN>
+    | <MINUS_SIGN> 
+ } 
+ 
+ void fragment() : {} {
+    <MINUS_SIGN> (<ID>|<INT>)
+    | <INT>
+    | <TRUE>
+    | <FALSE>
+ }
+
+// +++++++++++++++ Fresh End +++++++++++++++++++++++++++
+
+
+
+
+
+
+
 
 
 // ORIGIONAL CONDITION STATEMENT: NEED TO REMOVE LEFT RECURSION
@@ -327,6 +361,8 @@ void fragment(): { }
 // A -- > BA'
 // A' -- > alpha A' | epsilon
 
+
+/*
 void condition(): { }
 {
   condition_beta()condition_prime()
@@ -349,6 +385,30 @@ void condition_prime(): { }
   condition_alpha()condition_prime()
 | { }
 }
+*/
+
+
+
+
+
+
+//++++++++++++++ fresh start ++++++++++++++++
+ void condition_helper() : {} {
+    expression() comp_op() expression()
+ }
+
+ void condition() : {} {
+    (<NEGATE>|{}) (<LBR>|{})condition_helper()(<RBR>|{})(((<OR> | <AND>) condition_helper())|{})
+ }
+//++++++++++++++ Fresh End ++++++++++++++++++
+
+
+
+
+
+
+
+
 
 void comp_op(): { }
 {
