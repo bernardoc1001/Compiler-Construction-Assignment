@@ -189,13 +189,8 @@ void function()	: { }
   decl_list()
   <BEGIN>
   statement_block()
-  <RET> function_nested_brackets()<SEMI_COLON>
+  <RET> (<LBR> | { }) (expression() | { }) (<RBR> | { })<SEMI_COLON>
   <END>
-}
-
-void function_nested_brackets():{}
-{
-    (<LBR> | { }) (expression() | { }) (<RBR> | { })
 }
 
 void type() : { }
@@ -260,35 +255,12 @@ void statement_prime()	: { }
 
 }
 
-
-// ORIGIONAL EXPRESSION: NEED TO REMOVE LEFT RECURSION
-//void expression()	: { }
-//{
-//  fragment() binary_arith_op() fragment()
-//| <LBR> expression() <RBR>
-//| <ID> <LBR> arg_list() <RBR>
-//| fragment()
-//}
-//
-//void fragment()	: { }
-//{
-//  <ID>
-//| <MINUS_SIGN><ID>
-//| <NUM>
-//| <TRUE>
-//| <FALSE>
-//| expression()
-//}
-
-
-
-
-
-/*
 //expression is now a wrapper for fragment
 void expression()	: { }
 {
-	fragment()
+    //putting id here to remove lookahead
+    //if this consumes id then we shouldn't call fragment
+	(<LBR> | { }) fragment() (<RBR> | { })
 }
 
 void binary_arith_op()	: { }
@@ -297,23 +269,20 @@ void binary_arith_op()	: { }
 | <MINUS_SIGN>
 }
 
-
-//=========Start==============================
 void expression_alpha()	: { }
 {
-  binary_arith_op() fragment()
+  binary_arith_op() fragment() //Have id here for same reason as in void expression()
 }
 
 void expression_beta(): { }
 {
-  <LBR> expression() <RBR>
-| <ID> <LBR> arg_list() <RBR>
+  <LBR> arg_list() <RBR>
 }
 
 void fragment_delta()	: { }
 {
-  <ID>
-| <MINUS_SIGN><ID>
+
+ <MINUS_SIGN>(<ID> | <NUM>) //TODO look at this later
 | <NUM>
 | <TRUE>
 | <FALSE>
@@ -325,54 +294,11 @@ void fragment_prime(): { }
 | { }
 }
 
-
-// Not sure I've done id lookahead correctly here
 void fragment(): { }
 {
-  expression_beta()fragment_prime()
-| fragment_delta()fragment_prime()
+
+  (<ID>|fragment_delta()) (expression_beta()|{ }) fragment_prime() //tidied up
 }
-
-
-//=========End================================
-
-*/
-
-
-
-
-
-// +++++++++++++++ Fresh Start +++++++++++++++++++++++++
-
- void expression() : {} {
-    (<LBR>|{})expression_helper()(<RBR>|{})
- }
-
- void expression_helper() : {} {
-    (<ID>|(fragment()))((binary_arith_op()(<ID>|(fragment()))|(<LBR>arg_list()<RBR>))|{})
- }
-
- void binary_arith_op() : {} {
-    <PLUS_SIGN>
-    | <MINUS_SIGN> 
- } 
- 
- void fragment() : {} {
-    <MINUS_SIGN> (<ID>|<NUM>)
-    | <NUM>
-    | <TRUE>
-    | <FALSE>
- }
-
-// +++++++++++++++ Fresh End +++++++++++++++++++++++++++
-
-
-
-
-
-
-
-
 
 // ORIGIONAL CONDITION STATEMENT: NEED TO REMOVE LEFT RECURSION
 //void condition(): { }
@@ -417,11 +343,6 @@ void condition_prime(): { }
 }
 */
 
-
-
-
-
-
 //++++++++++++++ fresh start ++++++++++++++++
  void condition_helper() : {} {
     expression() comp_op() expression()
@@ -431,14 +352,6 @@ void condition_prime(): { }
     (<NEGATE>|{}) (<LBR>|{})condition_helper()(<RBR>|{})(((<OR> | <AND>) condition_helper())|{})
  }
 //++++++++++++++ Fresh End ++++++++++++++++++
-
-
-
-
-
-
-
-
 
 void comp_op(): { }
 {
