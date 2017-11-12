@@ -50,15 +50,38 @@ TOKEN_MGR_DECLS :
 	static int commentNesting = 0;
 }
 
-SKIP : /* COMMENTS */ /*TODO ADD IN OTHER KIND OF COMMENTS*/
+SKIP : //Ignoring spaces/tabs/mewlines
 {
-	"/*" { commentNesting++; }
-  | "*/" { commentNesting--;
-  		   if(commentNesting == 0)
-  		   		SwitchTo(DEFAULT);
-  		 }
-  | <~[]> 
+    " "
+    | "\t"
+    | "\n"
+    | "\r"
+    | "\f"
+
 }
+
+SKIP : // Single line comments
+{
+	<"//" (~["\n"])* "\n"> //Taken from Geoff's old notes http://www.computing.dcu.ie/~hamilton/teaching/CA448/notes/JavaCClex2.pdf
+
+}
+
+SKIP : // Multi line comments
+{
+	"/*" {commentNesting++;} : IN_COMMENT
+}
+
+<IN_COMMENT> SKIP :
+{
+    "/*" { commentNesting++; }
+    | "*/" { commentNesting--;
+            if (commentNesting == 0)
+                SwitchTo(DEFAULT);
+            }
+  | <~[]>
+}
+
+
 
  /* Keywords */
 TOKEN :
