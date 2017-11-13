@@ -7,7 +7,7 @@ options {
 /* ======== Section 2: User Code ======== */
 
 // This section 2 (from PARSER_BEGIN(CCALParser) to PARSER_END(CCALParser))
-//was taken from / based on David Sinclair's notes
+//was taken from/based on David Sinclair's notes
 
 PARSER_BEGIN(CCALParser)
 
@@ -94,21 +94,21 @@ SKIP : // Multi line comments
 TOKEN :
 {
 	< VAR : "var" >
-| 	< CONST : "const" >
-| 	< RET : "return" >
-| 	< INT : "integer" >
-| 	< BOOL : "boolean" >
-| 	< VOID : "void" >
-| 	< MAIN : "main" >
-|  	< IF : "if" >
-|  	< ELSE : "else" >
-| 	< TRUE : "true" >
-| 	< FALSE : "false" >
-| 	< WHILE : "while" >
-|  	< BEGIN : "begin" >
-| 	< END : "end" >
-|  	< IS : "is" >
-| 	< SKI : "skip" >
+    | < CONST : "const" >
+    | < RET : "return" >
+    | < INT : "integer" >
+    | < BOOL : "boolean" >
+    | < VOID : "void" >
+    | < MAIN : "main" >
+    | < IF : "if" >
+    | < ELSE : "else" >
+    | < TRUE : "true" >
+    | < FALSE : "false" >
+    | < WHILE : "while" >
+    | < BEGIN : "begin" >
+    | < END : "end" >
+    | < IS : "is" >
+    | < SKI : "skip" >
 }
 
  /* punctuation and binary operators */
@@ -116,20 +116,20 @@ TOKEN :
 TOKEN :
 {
 	< COMMA : [","] >
-| 	< SEMI_COLON : [";"] > 
-| 	< COLON : [":"] >
-| 	< ASSIGN : ["="] >
-| 	< PLUS_SIGN : ["+"] >
-| 	< MINUS_SIGN : ["-"] >
-| 	< NEGATE : ["~"] >
-|  	< OR : "||" >
-|  	< AND : "&&" >
-| 	< EQUALS : "==" >
-| 	< NOT_EQUALs : "!=" >
-| 	< LT : ["<"] >
-|  	< LTE : "<=" >
-| 	< GT : [">"] >
-| 	< GTE : ">=" >  
+    | < SEMI_COLON : [";"] >
+    | < COLON : [":"] >
+    | < ASSIGN : ["="] >
+    | < PLUS_SIGN : ["+"] >
+    | < MINUS_SIGN : ["-"] >
+    | < NEGATE : ["~"] >
+    | < OR : "||" >
+    | < AND : "&&" >
+    | < EQUALS : "==" >
+    | < NOT_EQUALs : "!=" >
+    | < LT : ["<"] >
+    | < LTE : "<=" >
+    | < GT : [">"] >
+    | < GTE : ">=" >
 }
 
 // Define brackets and count them here. Will perform check when finished parsing file
@@ -142,11 +142,11 @@ TOKEN :
 /* Numbers and identifiers */
 TOKEN :
 {
-  < NUM : (<ZERO_DIGIT>|((<NON_ZERO_DIGIT>)+ (<ZERO_DIGIT> | <NON_ZERO_DIGIT>)*)) >
-| < #NON_ZERO_DIGIT : ["1" - "9"] >
-| < ZERO_DIGIT : ["0"] >
-| < ID : (<LETTER>)+(<NUM>|"_"|<LETTER>)* >
-| < #LETTER : ["a" - "z", "A" -"Z"]>
+    < NUM : (<ZERO_DIGIT>|((<NON_ZERO_DIGIT>)+ (<ZERO_DIGIT> | <NON_ZERO_DIGIT>)*)) >
+    | < #NON_ZERO_DIGIT : ["1" - "9"] >
+    | < ZERO_DIGIT : ["0"] >
+    | < ID : (<LETTER>)+(<NUM>|"_"|<LETTER>)* >
+    | < #LETTER : ["a" - "z", "A" -"Z"]>
 }
 
 /* Anything not recognised so far*/
@@ -161,204 +161,197 @@ TOKEN :
 
 void program() : { }
 {
-  decl_list()
-  function_list()
-  main()
-  {if( CCALParserTokenManager.bracketNesting != 0)
-      throw new ParseException("There are " + CCALParserTokenManager.bracketNesting + " mismatched brackets in the code!");
+    decl_list()
+    function_list()
+    main()
+    {if( CCALParserTokenManager.bracketNesting != 0)
+        throw new ParseException("There are " + CCALParserTokenManager.bracketNesting + " mismatched brackets in the code!");
     }
 }
 
 void decl_list()	: { }
 {
-  (decl() < SEMI_COLON > decl_list())?
+    (decl() < SEMI_COLON > decl_list())?
 }
 
 
 void decl()	: { }
 {
-  var_decl()
-| const_decl()
+    var_decl()
+    | const_decl()
 }
 
 void var_decl()	: { }
 {
-  <VAR> <ID><COLON>type()
+    <VAR> <ID><COLON>type()
 }
 
 void const_decl()	: { }
 {
-  <CONST> <ID><COLON>type() <ASSIGN> expression()
+    <CONST> <ID><COLON>type() <ASSIGN> expression()
 }
 
 void function_list()	: { }
 {
-  (function() function_list())?
+    (function() function_list())?
 }
 
 void function()	: { }
 {
-  type() <ID> <LBR>parameter_list()<RBR> <IS>
-  decl_list()
-  <BEGIN>
-  statement_block()
-  <RET> (<LBR> | { }) (expression() | { }) (<RBR> | { })<SEMI_COLON>
-  <END>
+    type() <ID> <LBR>parameter_list()<RBR> <IS>
+    decl_list()
+    <BEGIN>
+    statement_block()
+    <RET> (<LBR> | { }) (expression() | { }) (<RBR> | { })<SEMI_COLON>
+    <END>
 }
 
 void type() : { }
 {
-  <INT>|<BOOL>|<VOID>
+    <INT>|<BOOL>|<VOID>
 }
 
 void parameter_list()	: { }
 {
-  nemp_parameter_list()
-| { }
+    nemp_parameter_list()
+    | { }
 }
 
-//Need to perform Left Factorisation
-//Original:
-//void nemp_parameter_list()	: { }
-//{
-//  <ID><COLON>type() | <ID><COLON>type() <COMMA> nemp_parameter_list()
-//}
-
+//Performed Left Factorisation here
 void nemp_parameter_list()	: { }
 {
-  <ID><COLON>type() nemp_parameter_list_prime()
+    <ID><COLON>type() nemp_parameter_list_prime()
 }
 
 void nemp_parameter_list_prime()	: { }
 {
-  <COMMA> nemp_parameter_list()
-| { }
+    <COMMA> nemp_parameter_list()
+    | { }
 }
 
 void main()	: { }
 {
-  <MAIN>
-  <BEGIN>
-  decl_list()
-  statement_block()
-  <END>
+    <MAIN>
+    <BEGIN>
+    decl_list()
+    statement_block()
+    <END>
 }
 
 void statement_block()	: { }
 {
-  statement() statement_block()
-| { }
+    statement() statement_block()
+    | { }
 }
 
 /* Again perform Left Factorisation*/
 void statement()	: { }
 {
-  <ID> statement_prime()
-| <BEGIN> statement_block() <END>
-| <IF> condition() <BEGIN> statement_block() <END>
-	<ELSE> <BEGIN> statement_block() <END>
-| <WHILE> condition() <BEGIN> statement_block() <END>
-| <SKI><SEMI_COLON>
+    <ID> statement_prime()
+    | <BEGIN> statement_block() <END>
+    | <IF> condition() <BEGIN> statement_block() <END>
+        <ELSE> <BEGIN> statement_block() <END>
+    | <WHILE> condition() <BEGIN> statement_block() <END>
+    | <SKI><SEMI_COLON>
 }
 
 void statement_prime()	: { }
 {
-  <ASSIGN> expression()<SEMI_COLON>
-| <LBR> arg_list() <RBR> <SEMI_COLON>
+    <ASSIGN> expression()<SEMI_COLON>
+    | <LBR> arg_list() <RBR> <SEMI_COLON>
 
 }
 
 //expression is now a wrapper for fragment
 void expression()	: { }
 {
-    //putting id here to remove lookahead
-    //if this consumes id then we shouldn't call fragment
-	(<LBR> | { }) fragment() (<RBR> | { })
+    //moved optional brackets here to have nested comments without conflicting
+    //with arg_list. My bracket nesting checks will ensure there is no bracket mismatch
+    (<LBR> | { }) fragment() (<RBR> | { })
 }
 
 void binary_arith_op()	: { }
 {
-  <PLUS_SIGN>
-| <MINUS_SIGN>
+    <PLUS_SIGN>
+    | <MINUS_SIGN>
 }
 
 void expression_alpha()	: { }
 {
-  binary_arith_op() fragment() //Have id here for same reason as in void expression()
+    binary_arith_op() fragment()
 }
 
 void expression_beta(): { }
 {
-  <LBR> arg_list() <RBR>
+    <LBR> arg_list() <RBR>
 }
 
 void fragment_delta()	: { }
 {
 
- <MINUS_SIGN>(<ID> | <NUM>) //TODO look at this later
-| <NUM>
-| <TRUE>
-| <FALSE>
+    <MINUS_SIGN>(<ID> | <NUM>)
+    | <NUM>
+    | <TRUE>
+    | <FALSE>
 }
 
 void fragment_prime(): { }
 {
-  expression_alpha()fragment_prime()
-| { }
+    expression_alpha()fragment_prime()
+    | { }
 }
 
 void fragment(): { }
 {
-
-  (<ID>|fragment_delta()) (expression_beta()|{ }) fragment_prime() //tidied up
+    (<ID>|fragment_delta()) (expression_beta()|{ }) fragment_prime()
 }
 
 void condition(): { }
 {
-  (<LBR> |{ })condition_beta()condition_prime()(<RBR> | { })
+    (<LBR> |{ })condition_beta()condition_prime()(<RBR> | { })
 }
 
 void condition_alpha(): { }
 {
-  ((<OR>) | (<AND>)) condition()
+    ((<OR>) | (<AND>)) condition()
 }
 
 void condition_beta(): { } //Added possible brackets above
 {
-  <NEGATE>condition()
-| expression() comp_op() expression()
+    <NEGATE>condition()
+    | expression() comp_op() expression()
 }
 
 void condition_prime(): { }
 {
-  condition_alpha()condition_prime()
-| { }
+    condition_alpha()condition_prime()
+    | { }
 }
 
 void comp_op(): { }
 {
-  <EQUALS>
-  | <NOT_EQUALs>
-  |	<LT>
-  |	<LTE>
-  |	<GT>
-  | <GTE>
+    <EQUALS>
+    | <NOT_EQUALs>
+    | <LT>
+    | <LTE>
+    | <GT>
+    | <GTE>
 }
 
 void arg_list(): { }
 {
-  nemp_arg_list()
-| { }
+    nemp_arg_list()
+    | { }
 }
 
 /*Perform Left Factoristation*/
 void nemp_arg_list(): { }
 {
-  <ID> nemp_arg_list_prime()
+    <ID> nemp_arg_list_prime()
 }
 
 void nemp_arg_list_prime(): { }
 {
-  <COMMA> nemp_arg_list()
-| { }
+    <COMMA> nemp_arg_list()
+    | { }
 }
