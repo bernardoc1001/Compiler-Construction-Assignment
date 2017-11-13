@@ -265,8 +265,8 @@ void statement_prime()	: { }
 //expression is now a wrapper for fragment
 void expression()	: { }
 {
-    //moved optional brackets here to have nested comments without conflicting
-    //with arg_list. My bracket nesting checks will ensure there is no bracket mismatch
+    //moved optional brackets here to have nested comments without conflicting with the
+    //left bracket of arg_list. My bracket nesting checks will ensure there is no bracket mismatch
     (<LBR> | { }) fragment() (<RBR> | { })
 }
 
@@ -289,7 +289,7 @@ void expression_beta(): { }
 void fragment_delta()	: { }
 {
 
-    <MINUS_SIGN>(<ID> | <NUM>)
+    <MINUS_SIGN>(<ID> | <NUM>) // I say or NUM here to define negative numbers
     | <NUM>
     | <TRUE>
     | <FALSE>
@@ -308,7 +308,7 @@ void fragment(): { }
 
 void condition(): { }
 {
-    (<LBR> |{ })condition_beta()condition_prime()(<RBR> | { })
+    (<LBR> |{ })condition_beta()condition_prime()(<RBR> | { }) //Added optional brackets here
 }
 
 void condition_alpha(): { }
@@ -316,7 +316,7 @@ void condition_alpha(): { }
     ((<OR>) | (<AND>)) condition()
 }
 
-void condition_beta(): { } //Added possible brackets above
+void condition_beta(): { } //Added possible brackets above in condition()
 {
     <NEGATE>condition()
     | expression() comp_op() expression()
