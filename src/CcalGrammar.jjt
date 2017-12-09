@@ -63,7 +63,7 @@ public class CCALParser
     }
 
     System.out.println();
-    System.out.println("Program:");
+    System.out.println("Program (PrintVisitor):");
     PrintVisitor pv = new PrintVisitor();
     root.jjtAccept(pv, null);
 
@@ -220,9 +220,10 @@ void number()  #Num : {Token t;}
                 }
 }
 
+//Follow the design pattern of Stms() from ExprLang example
 void decl_list() #DeclList : { }
 {
-    (decl() < SEMI_COLON > decl_list())?
+    (decl() <SEMI_COLON> decl_list())?
 }
 
 

@@ -2,8 +2,8 @@
 *.class
 *.jar
 *.java
-!src/Assignment2/STC.java
-!src/Assignment2/PrintVisitor.java
+!src/STC.java
+!src/PrintVisitor.java
 .project
 out/
-src/Assignment2/CcalGrammar.jj
+src/CcalGrammar.jj
