@@ -282,7 +282,7 @@ void nemp_parameter_list() #NempParameterList : { }
     identifier()<COLON>type() nemp_parameter_list_prime()
 }
 
-void nemp_parameter_list_prime() #NempParamterListPrime: { }
+void nemp_parameter_list_prime() #NempParameterListPrime: { }
 {
     <COMMA> nemp_parameter_list()
     | { }
