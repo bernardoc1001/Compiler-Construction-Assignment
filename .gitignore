@@ -3,6 +3,7 @@
 *.jar
 *.java
 !src/Assignment2/STC.java
+!src/Assignment2/PrintVisitor.java
 .project
 out/
 src/Assignment2/CcalGrammar.jj
