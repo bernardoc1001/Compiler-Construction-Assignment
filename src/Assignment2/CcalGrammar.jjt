@@ -19,12 +19,12 @@ import java.util.*;
 
 public class CCALParser
 {
-  //public static Hashtable ST = new Hashtable();
+  public static Hashtable ST = new Hashtable();
 
   public static void main(String[] args) throws ParseException, FileNotFoundException
   {
     String temp;
-    //STC temp2;
+    STC temp2;
 
 
     if (args.length < 1)
@@ -41,7 +41,7 @@ public class CCALParser
 
     root.dump(" ");
 
-    /*
+
     System.out.println();
     System.out.println("Symbol Table:");
 
@@ -62,6 +62,7 @@ public class CCALParser
       }
     }
 
+/*
     System.out.println();
     System.out.println("Program:");
     PrintVisitor pv = new PrintVisitor();
@@ -203,6 +204,22 @@ SimpleNode program() #Program : { }
     {return jjtThis;}
 }
 
+// Identifier taken from example ExprLang from notes. Added to make tracking
+// the value of an ID easier
+String identifier()  #ID : {Token t;}
+{
+  t = <ID> {jjtThis.value = t.image; return t.image;}
+}
+
+// Make a prod rule for numbers for similar reason to identifier
+//Todo review if this is neccessary
+void number()  #Num : {Token t;}
+{
+  t = <NUM> {jjtThis.value = t.image;
+                //ST.put(t.image, new STC("Number", t.image));
+                }
+}
+
 void decl_list() #DeclList : { }
 {
     (decl() < SEMI_COLON > decl_list())?
@@ -215,15 +232,19 @@ void decl() #Decl : { }
     | const_decl()
 }
 
-void var_decl() #VarDecl : { }
+void var_decl() #VarDecl : {Token t; String name;}
 {
-    <VAR> identifier()<COLON>type()
+    <VAR> name = identifier()<COLON> t = type() {jjtThis.value = t.image;
+                                                    ST.put(name, new STC(t.image, name));}
 }
 
-void const_decl() #ConstDecl : { }
+void const_decl() #ConstDecl : {Token t; String name;}
 {
-    <CONST> identifier()<COLON>type() <ASSIGN> expression()
+    <CONST> name = identifier()<COLON> t = type() <ASSIGN> expression() {jjtThis.value = t.image;
+                                                                            ST.put(name, new STC(t.image, name));}
 }
+
+
 
 void function_list() #FunctionList : { }
 {
@@ -240,11 +261,12 @@ void function() #Function : { }
     <END>
 }
 
-void type() #Type : { Token t; }
+//Return token to make building Symbol table easier
+Token type() #Type : { Token t; }
 {
-    t = <INT> {jjtThis.value = t.image;}
-    | t = <BOOL> {jjtThis.value = t.image;}
-    | t = <VOID> {jjtThis.value = t.image;}
+    t = <INT> {jjtThis.value = t.image; return t;}
+    | t = <BOOL> {jjtThis.value = t.image; return t;}
+    | t = <VOID> {jjtThis.value = t.image; return t;}
 }
 
 void parameter_list() #ParameterList : { }
@@ -325,8 +347,8 @@ void expression_beta() #ExpressionBeta : { }
 void fragment_delta() #FragmentDelta : { }
 {
 
-    <MINUS_SIGN>(identifier() | <NUM>) // I say or NUM here to define negative numbers
-    | <NUM>
+    <MINUS_SIGN>(identifier() | number()) // I say or NUM here to define negative numbers
+    | number()
     | <TRUE>
     | <FALSE>
 }
@@ -392,9 +414,3 @@ void nemp_arg_list_prime() #NempArgListPrime : { }
     | { }
 }
 
-// Identifier taken from example ExprLang from notes. Added to make tracking
-// the value of an ID easier
-String identifier()  #ID : {Token t;}
-{
-  t = <ID> {jjtThis.value = t.image; return t.image;}
-}
