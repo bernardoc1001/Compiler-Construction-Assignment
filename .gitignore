@@ -2,6 +2,7 @@
 *.class
 *.jar
 *.java
+!src/Assignment2/STC.java
 .project
 out/
 src/Assignment2/CcalGrammar.jj
