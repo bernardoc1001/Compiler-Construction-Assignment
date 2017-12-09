@@ -2,7 +2,7 @@
 options {
   JAVA_UNICODE_ESCAPE = true;
   IGNORE_CASE = true;
-  //todo MULTI = true;
+  MULTI = true;
   //todo VISITOR = true;
 }
 
@@ -217,12 +217,12 @@ void decl() #Decl : { }
 
 void var_decl() #VarDecl : { }
 {
-    <VAR> <ID><COLON>type()
+    <VAR> identifier()<COLON>type()
 }
 
 void const_decl() #ConstDecl : { }
 {
-    <CONST> <ID><COLON>type() <ASSIGN> expression()
+    <CONST> identifier()<COLON>type() <ASSIGN> expression()
 }
 
 void function_list() #FunctionList : { }
@@ -232,7 +232,7 @@ void function_list() #FunctionList : { }
 
 void function() #Function : { }
 {
-    type() <ID> <LBR>parameter_list()<RBR> <IS>
+    type() identifier() <LBR>parameter_list()<RBR> <IS>
     decl_list()
     <BEGIN>
     statement_block()
@@ -240,9 +240,11 @@ void function() #Function : { }
     <END>
 }
 
-void type() #Type : { }
+void type() #Type : { Token t; }
 {
-    <INT>|<BOOL>|<VOID>
+    t = <INT> {jjtThis.value = t.image;}
+    | t = <BOOL> {jjtThis.value = t.image;}
+    | t = <VOID> {jjtThis.value = t.image;}
 }
 
 void parameter_list() #ParameterList : { }
@@ -254,7 +256,7 @@ void parameter_list() #ParameterList : { }
 //Performed Left Factorisation here
 void nemp_parameter_list() #NempParameterList : { }
 {
-    <ID><COLON>type() nemp_parameter_list_prime()
+    identifier()<COLON>type() nemp_parameter_list_prime()
 }
 
 void nemp_parameter_list_prime() #NempParamterListPrime: { }
@@ -281,7 +283,7 @@ void statement_block() #StatementBlock : { }
 /* Again perform Left Factorisation*/
 void statement() #Statement : { }
 {
-    <ID> statement_prime()
+    identifier() statement_prime()
     | <BEGIN> statement_block() <END>
     | <IF> condition() <BEGIN> statement_block() <END>
         <ELSE> <BEGIN> statement_block() <END>
@@ -323,7 +325,7 @@ void expression_beta() #ExpressionBeta : { }
 void fragment_delta() #FragmentDelta : { }
 {
 
-    <MINUS_SIGN>(<ID> | <NUM>) // I say or NUM here to define negative numbers
+    <MINUS_SIGN>(identifier() | <NUM>) // I say or NUM here to define negative numbers
     | <NUM>
     | <TRUE>
     | <FALSE>
@@ -337,7 +339,7 @@ void fragment_prime() #FragmentPrime : { }
 
 void fragment() #Fragment : { }
 {
-    (<ID>|fragment_delta()) (expression_beta()|{ }) fragment_prime()
+    (identifier()|fragment_delta()) (expression_beta()|{ }) fragment_prime()
 }
 
 void condition() #Condition : { }
@@ -381,11 +383,18 @@ void arg_list() #ArgList : { }
 /*Perform Left Factoristation*/
 void nemp_arg_list() #NempArgList : { }
 {
-    <ID> nemp_arg_list_prime()
+    identifier() nemp_arg_list_prime()
 }
 
 void nemp_arg_list_prime() #NempArgListPrime : { }
 {
     <COMMA> nemp_arg_list()
     | { }
+}
+
+// Identifier taken from example ExprLang from notes. Added to make tracking
+// the value of an ID easier
+String identifier()  #ID : {Token t;}
+{
+  t = <ID> {jjtThis.value = t.image; return t.image;}
 }
