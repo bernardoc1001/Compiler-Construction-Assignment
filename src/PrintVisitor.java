@@ -30,6 +30,14 @@ public class PrintVisitor implements CCALParserVisitor {
     }
 
     @Override
+    public Object visit(ASTBinaryArithOpSign node, Object data){
+        //System.out.println("Start of BinaryArithOpSign visitor");
+        System.out.println(node.value);
+        node.childrenAccept(this, data);
+        return (data);
+    }
+
+    @Override
     public Object visit(ASTCompOp node, Object data){
         //System.out.println("Start of CompOp visitor");
         System.out.println(node.value);
@@ -101,6 +109,9 @@ public class PrintVisitor implements CCALParserVisitor {
         return (data);
     }
 
+    /*
+    //todo got ride of this node
+
     @Override
     public Object visit(ASTExpressionAlpha node, Object data){
         //System.out.println("Start of ExpressionAlpha visitor");
@@ -108,6 +119,7 @@ public class PrintVisitor implements CCALParserVisitor {
         node.childrenAccept(this, data);
         return (data);
     }
+    */
 
     @Override
     public Object visit(ASTExpressionBeta node, Object data){

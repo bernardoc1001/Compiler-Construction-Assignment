@@ -1,5 +1,7 @@
+var i:integer;
+var x:integer;
 main
 begin
-// hello world //hello
-/* hi */
+  x = 4;
+  i = x - x;
 end
