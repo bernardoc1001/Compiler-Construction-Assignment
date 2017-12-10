@@ -217,8 +217,8 @@ String identifier()  #ID : {Token t;}
 //Todo review if this is neccessary
 void number()  #Num : {Token t;}
 {
-  t = <NUM> {jjtThis.value = t.image;
-                //ST.put(t.image, new STC("Number", t.image));
+  t = <NUM> {jjtThis.value = "integer"; //todo review this, should I stick with t.image or integer?
+               //todo ST.put(t.image, new STC("Number" + t.image, t.image)); //Puts the number on the symbol table
                 }
 }
 
@@ -333,15 +333,16 @@ void expression() #Expression: { }
     (<LBR> | { }) fragment() (<RBR> | { })
 }
 
-void binary_arith_op() #BinaryArithOp : { }
+//Make this node purely about the sign
+void binary_arith_op() #BinaryArithOpSign : { }
 {
     <PLUS_SIGN>
     | <MINUS_SIGN>
 }
 
-void expression_alpha()	#ExpressionAlpha : { }
+void expression_alpha()	#void : { }
 {
-    binary_arith_op() fragment()
+    binary_arith_op() fragment() #BinaryArithOp(2) // Binary Sign, RHS
 }
 
 void expression_beta() #ExpressionBeta : { }

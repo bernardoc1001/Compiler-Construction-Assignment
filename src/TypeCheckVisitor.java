@@ -49,7 +49,47 @@ public class TypeCheckVisitor implements CCALParserVisitor {
 
     @Override
     public Object visit(ASTBinaryArithOp node, Object data){
-        //System.out.println("Start of BinaryArithOp visitor");
+        System.out.println("Start of BinaryArithOp visitor");
+
+        // Node LHS_Node =  node.jjtGetParent().jjtGetParent().jjtGetChild(0);
+        // ArithSymbol = node.child.[0]
+        // Node RHS_Node = node.jjtGetChild(1);
+
+        //try getting to a decent root of the nodes, then iteraively find the value
+        Node lhs = node.jjtGetParent().jjtGetParent().jjtGetChild(0);
+        Node rhs = node.jjtGetChild(1);
+
+        while(lhs.jjtGetNumChildren() > 0){
+            lhs = lhs.jjtGetChild(0);
+
+        }
+
+        while(rhs.jjtGetNumChildren() > 0){
+            rhs = rhs.jjtGetChild(0);
+        }
+
+        SimpleNode lhsSimpleNode = (SimpleNode) lhs;
+        SimpleNode rhsSimpleNode = (SimpleNode) rhs;
+
+        System.out.println("LHS VALUE: " + lhsSimpleNode.jjtGetValue().toString());
+        System.out.println("RHS VALUE: " + rhsSimpleNode.jjtGetValue().toString());
+
+        //Objects.equals(hashTableEntry.type, "integer")
+        if(((lhsSimpleNode.jjtGetValue() == "integer") || getDataType(lhsSimpleNode, data) == DataType.TypeInteger)
+                && ((rhsSimpleNode.jjtGetValue() == "integer") || getDataType(rhsSimpleNode, data) == DataType.TypeInteger)){
+            System.out.println("Correct: LHS and RHS == Integers");
+            return DataType.TypeInteger;
+        }
+        else{
+            System.out.println("Error: LHS and RHS != Integers");
+            return DataType.TypeUnknown;
+        }
+
+    }
+
+    @Override
+    public Object visit(ASTBinaryArithOpSign node, Object data){
+        //System.out.println("Start of BinaryArithOpSign visitor");
         System.out.println(node.value);
         node.childrenAccept(this, data);
         return (data);
@@ -127,6 +167,9 @@ public class TypeCheckVisitor implements CCALParserVisitor {
         return (data);
     }
 
+    /*
+    //todo got ride of this node
+
     @Override
     public Object visit(ASTExpressionAlpha node, Object data){
         //System.out.println("Start of ExpressionAlpha visitor");
@@ -134,6 +177,7 @@ public class TypeCheckVisitor implements CCALParserVisitor {
         node.childrenAccept(this, data);
         return (data);
     }
+*/
 
     @Override
     public Object visit(ASTExpressionBeta node, Object data){
@@ -157,6 +201,7 @@ public class TypeCheckVisitor implements CCALParserVisitor {
         System.out.println(node.value);
         node.childrenAccept(this, data);
         return (data);
+        //todo return
     }
 
     @Override
@@ -243,6 +288,7 @@ public class TypeCheckVisitor implements CCALParserVisitor {
         //System.out.println("Start of Num visitor");
         //System.out.println(node.value);
         //node.childrenAccept(this, data);
+        System.out.println("Returning type integer (of value + " + node.value + ")");
         return DataType.TypeInteger;
     }
 
