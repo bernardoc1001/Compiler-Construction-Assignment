@@ -4,6 +4,8 @@
 *.java
 !src/STC.java
 !src/PrintVisitor.java
+!src/TypeCheckVisitor.java
+!src/DataType.java
 .project
 out/
 src/CcalGrammar.jj

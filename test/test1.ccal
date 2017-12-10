@@ -1,5 +1,11 @@
+void func () is
+begin
+  return ();
+end
+
 main
 begin
   // a simple comment
   /* a comment /* with /* several */ nested */ comments */
+  func ();
 end

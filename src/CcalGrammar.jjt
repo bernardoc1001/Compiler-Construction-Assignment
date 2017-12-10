@@ -62,17 +62,19 @@ public class CCALParser
       }
     }
 
-    System.out.println();
+    System.out.println("================= Start of PrintVisitor ========");
     System.out.println("Program (PrintVisitor):");
     PrintVisitor pv = new PrintVisitor();
     root.jjtAccept(pv, null);
 
-/*
-    System.out.println();
+
+    System.out.println("================= End of PrintVisitor ==========");
+
+    System.out.println("================= Start of TypeChecking ========");
     System.out.println("Type Checking:");
     TypeCheckVisitor tc = new TypeCheckVisitor();
     root.jjtAccept(tc, ST);
-    */
+    System.out.println("================= End of TypeChecking ==========");
   }
 }
 
@@ -252,14 +254,16 @@ void function_list() #FunctionList : { }
     (function() function_list())?
 }
 
-void function() #Function : { }
+//Add to Syymbol table similar to VarDecl and ConstDecl
+void function() #Function : {Token t; String name; }
 {
-    type() identifier() <LBR>parameter_list()<RBR> <IS>
+    t = type() name = identifier() <LBR>parameter_list()<RBR> <IS>
     decl_list()
     <BEGIN>
     statement_block()
     <RET> (<LBR> | { }) (expression() | { }) (<RBR> | { })<SEMI_COLON>
-    <END>
+    <END> {jjtThis.value = name; //changed from t.image to name
+              ST.put(name, new STC(t.image, name));}
 }
 
 //Return token to make building Symbol table easier
