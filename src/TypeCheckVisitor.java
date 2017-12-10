@@ -3,10 +3,10 @@ import java.util.*;
 public class TypeCheckVisitor implements CCALParserVisitor {
 
     private static Object getDataType(SimpleNode node, Object data){
-        Hashtable ST = (Hashtable) data;
+        SymbolTable ST = (SymbolTable) data;
         STC hashTableEntry;
 
-        hashTableEntry = (STC)ST.get(node.value);
+        hashTableEntry = ST.getStcFromScope(SymbolTable.GLOBAL_SCOPE ,(String) node.value); //TODO change from global
         if(Objects.equals(hashTableEntry.type, "integer")){
             System.out.println("Returning TypeInteger");
             return DataType.TypeInteger;

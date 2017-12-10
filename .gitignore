@@ -3,6 +3,7 @@
 *.jar
 *.java
 !src/STC.java
+!src/SymbolTable.java
 !src/PrintVisitor.java
 !src/TypeCheckVisitor.java
 !src/DataType.java
