@@ -98,13 +98,38 @@ public class SymbolTable {
         return mapOfSingleScope.get(stcName);
     }
 
-    //todo finish print
-    public void printScope(){
-        System.out.println("***** Start of Scope: " + getCurrentScopeName() + " *****" );
-//        for(){
-//
-//        }
-        System.out.println("***** End of Scope: " + getCurrentScopeName() + " *****");
+    public void printSymbolTable(){
+        System.out.println("##### Start Printing out Symbol Table #####");
+
+        //for each scope
+        for(Map.Entry<String, Hashtable<String, STC>> scope : getScopeMap().entrySet()){
+            //for each variable in scope
+            System.out.println("+++++ Start of Scope " + scope.getKey() + " +++++");
+
+            String temp;
+            STC temp2;
+            Enumeration t = scope.getValue().keys();
+
+            //Print out the symbols in the scope
+            while (t.hasMoreElements()) {
+
+                temp = (String) t.nextElement();
+                temp2 = (STC) scope.getValue().get(temp);
+
+                System.out.println(" Symbol: " + temp);
+                if (temp2.type != null) {
+                    System.out.println("  >> type = " + temp2.type);
+                }
+                if (temp2.value != null) {
+                    System.out.println("  >> value = " + temp2.value);
+                }
+            }
+
+            System.out.println("+++++ End of Scope " + scope.getKey() + " +++++");
+        }
+
+
+        System.out.println("##### End of Printing out Symbol Table #####");
     }
 
     // write method to check if variable is in current scope
