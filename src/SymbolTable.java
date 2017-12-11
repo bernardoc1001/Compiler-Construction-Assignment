@@ -3,11 +3,6 @@ import java.util.*;
 // Class for the symbol table. Is a map of maps of the different scopes,
 // with STC entries in the inner scope map
 
-
-//try map of strings and inner maps. String == scope name. Inner maps == variables
-//track current scope, previous scope
-
-
 public class SymbolTable {
     public static final String GLOBAL_SCOPE = "global";
     private String currentScopeName; //Scopes are either "global", "main", or named after a function name (e.g "foobar")
@@ -76,7 +71,7 @@ public class SymbolTable {
     public void addToScope(String scopeName, String stcName, STC stc){
         Hashtable<String, STC> mapOfSingleScope = getMapOfSingleScope(scopeName);
         if(mapOfSingleScope == null){
-            getScopeMap().put(scopeName, new Hashtable<String, STC>()); //make inner map for that scope //todo use setter???
+            getScopeMap().put(scopeName, new Hashtable<String, STC>()); //make inner map for that scope
             mapOfSingleScope = getMapOfSingleScope(scopeName);
         }
         mapOfSingleScope.put(stcName, stc);
@@ -124,18 +119,8 @@ public class SymbolTable {
                     System.out.println("  >> value = " + temp2.value);
                 }
             }
-
             System.out.println("+++++ End of Scope " + scope.getKey() + " +++++");
         }
-
-
         System.out.println("##### End of Printing out Symbol Table #####");
     }
-
-    // write method to check if variable is in current scope
-
-    // write method to see if variable is in global scope
-
-
-
 }
