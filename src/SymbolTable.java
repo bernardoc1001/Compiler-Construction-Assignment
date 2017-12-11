@@ -10,28 +10,29 @@ import java.util.*;
 
 public class SymbolTable {
     public static final String GLOBAL_SCOPE = "global";
-    private String scopeName;
+    private String currentScopeName; //Scopes are either "global", "main", or named after a function name (e.g "foobar")
     private LinkedHashMap<String, Hashtable<String, STC>> scopeMap; //String = scope name. Inner map = stc entries with their name as the String
 
     // Constructors
     SymbolTable(String name){
-        setScopeName(name);
+        setCurrentScopeName(name);
         setScopeMap(new LinkedHashMap<String, Hashtable<String, STC>>());
         getScopeMap().put(name, new Hashtable<String, STC>()); //Scope starts off empty
     }
 
     SymbolTable(String name, LinkedHashMap<String, Hashtable<String, STC>> scopeMap){
-        setScopeName(name);
+        setCurrentScopeName(name);
         setScopeMap(scopeMap);
     }
 
     // Getter and Setters
-    public String getScopeName(){
-        return this.scopeName;
+    public String getCurrentScopeName(){
+        return this.currentScopeName;
     }
 
-    private void setScopeName(String scopeName) {
-        this.scopeName = scopeName;
+    //This setter will be called when changing scopes in the CcalParser
+    public void setCurrentScopeName(String currentScopeName) {
+        this.currentScopeName = currentScopeName;
     }
 
 
@@ -43,27 +44,50 @@ public class SymbolTable {
         this.scopeMap = scopeMap;
     }
 
+
+    //helper function to get the inner map of a single scope
+    private Hashtable<String, STC> getMapOfSingleScope(String scopeName){
+        return getScopeMap().get(scopeName);
+    }
+
+    //method to add stc variable to current scope
+    public void addToScope(String stcName, STC stc){
+        addToScope(getCurrentScopeName(), stcName, stc);
+    }
+
     // method to add stc variable to a particular scope
     public void addToScope(String scopeName, String stcName, STC stc){
-        LinkedHashMap<String, Hashtable<String, STC>> mapOfAllScopes = getScopeMap();
-        Hashtable<String, STC> mapOfSingleScope = mapOfAllScopes.get(scopeName);
+        Hashtable<String, STC> mapOfSingleScope = getMapOfSingleScope(scopeName);
+        if(mapOfSingleScope == null){
+            getScopeMap().put(scopeName, new Hashtable<String, STC>()); //make inner map for that scope //todo use setter???
+            mapOfSingleScope = getMapOfSingleScope(scopeName);
+        }
         mapOfSingleScope.put(stcName, stc);
+    }
+
+    // method to get a value from the current scope
+    public STC getStcFromScope(String stcName){
+        return getStcFromScope(getCurrentScopeName(), stcName);
     }
 
     // method to get a value from a particular scope
     public STC getStcFromScope(String scopeName, String stcName){
-        LinkedHashMap<String, Hashtable<String, STC>> mapOfAllScopes = getScopeMap();
-        Hashtable<String, STC> mapOfSingleScope = mapOfAllScopes.get(scopeName);
+        Hashtable<String, STC> mapOfSingleScope = getMapOfSingleScope(scopeName);
+        if(mapOfSingleScope.get(stcName) == null && !scopeName.equals(SymbolTable.GLOBAL_SCOPE)){
+            //value not in current scope, try retrieving from global scope
+            return getStcFromScope(SymbolTable.GLOBAL_SCOPE, stcName);
+        }
+        //else return the result (note result may == null)
         return mapOfSingleScope.get(stcName);
     }
 
     //todo finish print
     public void printScope(){
-        System.out.println("***** Start of Scope: " + getScopeName() + " *****" );
+        System.out.println("***** Start of Scope: " + getCurrentScopeName() + " *****" );
 //        for(){
 //
 //        }
-        System.out.println("***** End of Scope: " + getScopeName() + " *****");
+        System.out.println("***** End of Scope: " + getCurrentScopeName() + " *****");
     }
 
     // write method to check if variable is in current scope
