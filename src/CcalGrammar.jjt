@@ -245,14 +245,16 @@ void var_decl() #VarDecl : {Token t; String name;}
 {
     <VAR> name = identifier()<COLON> t = type() {jjtThis.value = t.image;
                                                     //ST.put(name, new STC(t.image, name));
-                                                    ST.addToScope(SymbolTable.GLOBAL_SCOPE, name, new STC(t.image, name));}
+                                                    ST.addToScope(name, new STC(t.image, name)); // add to current scope
+                                                    }
 }
 
 void const_decl() #ConstDecl : {Token t; String name;}
 {
     <CONST> name = identifier()<COLON> t = type() <ASSIGN> expression() {jjtThis.value = t.image;
                                                                             //ST.put(name, new STC(t.image, name));
-                                                                            ST.addToScope(SymbolTable.GLOBAL_SCOPE, name, new STC(t.image, name));}
+                                                                            ST.addToScope(name, new STC(t.image, name)); // add to current scope
+                                                                            }
 }
 
 
@@ -265,14 +267,17 @@ void function_list() #FunctionList : { }
 //Add to Syymbol table similar to VarDecl and ConstDecl
 void function() #Function : {Token t; String name; }
 {
-    t = type() name = identifier() <LBR>parameter_list()<RBR> <IS>
+    t = type() name = identifier() <LBR>parameter_list()<RBR> <IS> {ST.setCurrentScopeName(name); //Set the scope to the func name
+                                                                       ST.addToScope(name, new STC(t.image, name)); // Add to current scope
+                                                                       }
     decl_list()
     <BEGIN>
     statement_block()
     <RET> (<LBR> | { }) (expression() | { }) (<RBR> | { })<SEMI_COLON>
     <END> {jjtThis.value = name; //changed from t.image to name
               //ST.put(name, new STC(t.image, name));
-              ST.addToScope(SymbolTable.GLOBAL_SCOPE, name, new STC(t.image, name));} //TODO here is where to change scope
+
+              }
 }
 
 //Return token to make building Symbol table easier
@@ -303,6 +308,7 @@ void nemp_parameter_list_prime() #NempParameterListPrime: { }
 
 void main() #Main : { }
 {
+    {ST.setCurrentScopeName("main");} // set current scope to main
     <MAIN>
     <BEGIN>
     decl_list()

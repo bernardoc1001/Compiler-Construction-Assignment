@@ -7,7 +7,11 @@ public class TypeCheckVisitor implements CCALParserVisitor {
         STC hashTableEntry;
 
         hashTableEntry = ST.getStcFromScope(SymbolTable.GLOBAL_SCOPE ,(String) node.value); //TODO change from global
-        if(Objects.equals(hashTableEntry.type, "integer")){
+        if(hashTableEntry == null){
+            System.out.println("Error: " + (String) node.value + " not found in scope. Returning typeUnknown");
+            return DataType.TypeUnknown;
+        }
+        else if(Objects.equals(hashTableEntry.type, "integer")){
             System.out.println("Returning TypeInteger");
             return DataType.TypeInteger;
         }
