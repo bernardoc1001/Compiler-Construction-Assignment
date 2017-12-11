@@ -11,6 +11,8 @@ import java.util.*;
 public class SymbolTable {
     public static final String GLOBAL_SCOPE = "global";
     private String currentScopeName; //Scopes are either "global", "main", or named after a function name (e.g "foobar")
+    private ArrayDeque<String> previousScopeNameStack = new ArrayDeque<>(); //Keep track of previous scope on a stack
+                                                                        // So if func2 is called inside func1, after func2 is done scope can be returned to func1
     private LinkedHashMap<String, Hashtable<String, STC>> scopeMap; //String = scope name. Inner map = stc entries with their name as the String
 
     // Constructors
@@ -32,9 +34,24 @@ public class SymbolTable {
 
     //This setter will be called when changing scopes in the CcalParser
     public void setCurrentScopeName(String currentScopeName) {
+        if(getCurrentScopeName() != null){
+            pushPreviousScopeNameStack(getCurrentScopeName());
+        }
         this.currentScopeName = currentScopeName;
     }
 
+    public void setCurrentScopeNameToPrevious(){
+        setCurrentScopeName(popPreviousScopeNameStack());
+    }
+
+    // Push a string (usually CurrentScopName) onto the previousScopeName stack
+    private void pushPreviousScopeNameStack(String name){
+        previousScopeNameStack.push(name);
+    }
+
+    private String popPreviousScopeNameStack(){
+        return previousScopeNameStack.pop();
+    }
 
     public LinkedHashMap<String, Hashtable<String, STC>> getScopeMap(){
         return this.scopeMap;

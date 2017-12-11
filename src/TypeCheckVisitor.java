@@ -205,7 +205,6 @@ public class TypeCheckVisitor implements CCALParserVisitor {
         System.out.println(node.value);
         node.childrenAccept(this, data);
         return (data);
-        //todo return
     }
 
     @Override
