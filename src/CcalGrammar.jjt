@@ -268,7 +268,7 @@ void function_list() #FunctionList : { }
 void function() #Function : {Token t; String name; }
 {
     t = type() name = identifier() <LBR>parameter_list()<RBR> <IS> {ST.setCurrentScopeName(name); //Set the scope to the func name
-                                                                       ST.addToScope(name, new STC(t.image, name)); // Add to current scope
+                                                                       ST.addToScope(SymbolTable.GLOBAL_SCOPE,name , new STC(t.image, name)); // Add the function entry to the global scope
                                                                        }
     decl_list()
     <BEGIN>
