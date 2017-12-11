@@ -1,0 +1,7 @@
+var i:integer;
+var b:boolean;
+main
+begin
+  b = true;
+  i = 5 - x;
+end

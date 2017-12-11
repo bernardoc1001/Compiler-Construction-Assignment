@@ -36,18 +36,7 @@ public class CCALParser
     System.out.println("Abstract Syntax Tree:");
 
     root.dump(" ");
-
-
     System.out.println();
-
-    System.out.println("================= Start of PrintVisitor ========");
-    System.out.println("Program (PrintVisitor):");
-    PrintVisitor pv = new PrintVisitor();
-    root.jjtAccept(pv, null);
-
-
-    System.out.println("================= End of PrintVisitor ==========");
-
     System.out.println("================= Start of TypeChecking ========");
     System.out.println("Type Checking:");
     TypeCheckVisitor tc = new TypeCheckVisitor();
